@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import useFetch from '../hooks/useFetch';
+import { useNavigate } from 'react-router-dom';
 
 export default function Create () {
 
@@ -7,16 +8,26 @@ export default function Create () {
   let [ description, setDescription ] = useState("");
   let [ category, setCategory ] = useState("");
   let [ categories, setCategories ] = useState([]);
-  let { data: book } = useFetch("http://localhost:3000/Books");
+  let { setPostData, data: books } = useFetch("http://localhost:3000/Books", "POST");
+  let navigate = useNavigate();
 
   let addNewCategory = e => {
     e.preventDefault();
     if (categories.includes(category)) {
       return;
     }
+    if (category === "") {
+      return;
+    }
     setCategories([...categories, category]);
     setCategory("");
   }
+
+  useEffect(() => {
+    if (books) {
+      navigate(`/books/${books.id}`);
+    }
+  }, [books, navigate])
 
   let createNewBook = e => {
     e.preventDefault();
@@ -27,6 +38,7 @@ export default function Create () {
       description,
       categories
     }
+    setPostData(newBook);
   }
 
   return (
