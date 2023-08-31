@@ -4,15 +4,23 @@ import HeroSection from '../components/HeroSection';
 import "./layout.css";
 import { Outlet, useLocation } from 'react-router-dom';
 import { SwitchTransition, CSSTransition } from 'react-transition-group';
+import useTheme from '../hooks/useTheme';
 
 export default function Layout () {
-  const locatin = useLocation();
+
+  let { isDark } = useTheme();
+  if (isDark) {
+    document.body.classList.add('bg-dbg');
+  } else {
+    document.body.classList.remove('bg-dbg');
+  }
+  const location = useLocation();
 
   return (
     <>
       <Navbar />
       <SwitchTransition>
-        <CSSTransition timeout={400} classNames="fade" key={locatin.pathname}>
+        <CSSTransition timeout={300} classNames="fade" key={location.pathname}>
             <div className='max-w-xl2 max-w-6xl p-3 mx-auto'>
               <HeroSection />
               <Outlet />

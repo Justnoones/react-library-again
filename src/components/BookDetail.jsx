@@ -3,11 +3,13 @@ import { useParams } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 import gojo from '../assets/download.jpg';
 import { Link } from 'react-router-dom';
+import useTheme from '../hooks/useTheme';
 
 export default function BookDetail () {
     let param = useParams();
     let url = `http://localhost:3000/Books/${param.id}`;
     let { data : book, loading, error } = useFetch(url);
+    let { isDark } = useTheme();
   return (
     <div className='mt-5'>
         {loading && <div className='text-center text-gray-500 font-bold text-2xl mt-3'>Loading...</div>}
@@ -18,9 +20,9 @@ export default function BookDetail () {
                 <img src={gojo} className='w-full' />
             </div>
             <div className='space-y-5'>
-                <h1 className='text-2xl font-bold'>{book.title}</h1>
-                <p>{book.description}</p>
-                <div className='d flex flex-wrap gap-2'>
+                <h1 className={`text-2xl font-bold ${isDark && "text-white"}`}>{book.title}</h1>
+                <p className={`${isDark && "text-white"}`}>{book.description}</p>
+                <div className={`d flex flex-wrap gap-2`}>
                 {book.categories.map(category => (
                     <span key={category} className='text-sm text-white bg-indigo-500 px-2 py-1 rounded-md'>{category}</span>
                 ) )}
