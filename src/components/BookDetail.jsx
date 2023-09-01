@@ -1,19 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import useFetch from '../hooks/useFetch';
 import gojo from '../assets/download.jpg';
 import { Link } from 'react-router-dom';
 import useTheme from '../hooks/useTheme';
+import db from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function BookDetail () {
-    let param = useParams();
-    let url = `http://localhost:3000/Books/${param.id}`;
-    let { data : book, loading, error } = useFetch(url);
+    let { id } = useParams();
+    let [error, setError] = useState(false);
+    let [loading, setLoading] = useState(false);
+    let [book, setBook] = useState(null);
     let { isDark } = useTheme();
+
+    useEffect(() => {
+        setLoading(true);
+        let ref = doc(db, "books", id);
+        getDoc(ref)
+            .then(doc => {
+                if (doc.exists()) {
+                    let book = { id : doc.id, ...doc.data() };
+                    setBook(book);
+                    setLoading(false);
+                    setError(false);
+                } else {
+                    setError(true);
+                    setLoading(false);
+                }
+            })
+    }, [id]);
   return (
     <div className='mt-5'>
         {loading && <div className='text-center text-gray-500 font-bold text-2xl mt-3'>Loading...</div>}
-        {error && <div className='text-center text-gray-500 font-bold text-2xl mt-3'>{error}</div>}
+        {error && <div className='text-center text-gray-500 font-bold text-2xl mt-3'>Failed To Fetch.</div>}
         {book && 
         <div className='grid grid-cols-2'>
             <div className='w-[80%] '>

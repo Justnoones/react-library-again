@@ -11,20 +11,28 @@ export default function BookLists () {
   let searchValue = param.get('q');
   let [error, setError] = useState(false);
   let [loading, setLoading] = useState(false);
-  let [books, setBooks] = useState("");
+  let [books, setBooks] = useState([]);
   useEffect(() => {
+    setLoading(true);
     let ref = collection(db, 'books');
     getDocs(ref)
       .then(docs => {
-        let books = [];
-        docs.forEach(doc => {
-          let book = {
-            id : doc.id,
-            ...doc.data()
-          }
-          books = [...books, book];
-        })
-        setBooks(books);
+        if (docs.empty) {
+          setLoading(false);
+          setError("no documents found.");
+        } else {
+          let books = [];
+          docs.forEach(doc => {
+            let book = {
+              id : doc.id,
+              ...doc.data()
+            }
+            books = [...books, book];
+          })
+          setLoading(false);
+          setBooks(books);
+          setError(null);
+        }
       })
   }, [])
   

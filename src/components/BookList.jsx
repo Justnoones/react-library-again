@@ -6,7 +6,7 @@ import useTheme from '../hooks/useTheme';
 export default function BookList ({book}) {
   let { isDark } = useTheme();
   return (
-    <Link to={`books/${book.id}`} className={`min-h-[470px] border-2 shadow-sm text-center space-y-2 ${isDark && "border-primary"}`}>
+    <Link to={`books/${book.id}`} className={`min-h-[350px] border-2 shadow-sm text-center space-y-2 ${isDark && "border-primary"}`}>
         <div>
             <img src={gojo} className='w-full h-full' alt={"gojo"} />
         </div>
