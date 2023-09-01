@@ -30,6 +30,7 @@ export default function useFetch (url, method="GET") {
               })
             .catch(e => {
               setError(e.message);
+              setLoading(false);
             })
         }
 
@@ -48,8 +49,6 @@ export default function useFetch (url, method="GET") {
           }
           fetchData(options);
         }
-
-        
 
           return () => abortController.abort();
     }, [url, postData]);

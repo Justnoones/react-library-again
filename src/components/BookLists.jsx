@@ -1,25 +1,43 @@
-import React from 'react';
-import useFetch from '../hooks/useFetch';
+import React, { useEffect, useState } from 'react';
 import BookList from './BookList';
 import { useLocation } from 'react-router-dom';
+import db from '../firebase/index';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function BookLists () {
   
   let location = useLocation();
   let param = new URLSearchParams(location.search);
   let searchValue = param.get('q');
-  let url = `http://localhost:3000/Books${searchValue ? "?q="+searchValue : ""}`;
-  let { data : books, loading, error } = useFetch(url);
-
+  let [error, setError] = useState(false);
+  let [loading, setLoading] = useState(false);
+  let [books, setBooks] = useState("");
+  useEffect(() => {
+    let ref = collection(db, 'books');
+    getDocs(ref)
+      .then(docs => {
+        let books = [];
+        docs.forEach(doc => {
+          let book = {
+            id : doc.id,
+            ...doc.data()
+          }
+          books = [...books, book];
+        })
+        setBooks(books);
+      })
+  }, [])
+  
   return (
     <>
-        {error && <b>{error}</b>}
+        {error && <p className={`text-center text-2xl font-bold text-gray-700 mt-5`}>Failed To Fetch.</p>}
+        {!error && loading && <p className={`text-center text-2xl font-bold text-gray-700 mt-5`}>Loading...</p>}
         <div className='grid grid-cols-2 md:grid-cols-4 gap-3 mt-5'>
-            {loading && <p>loading...</p>}
             {books && books.map(book => (
               <BookList key={book.id} book={book} />
             ))}
         </div>
+        {books && books.length < 1 && <p className={`text-center text-2xl font-bold text-gray-700`}>No Records Found.</p>}
     </>
   )
 }

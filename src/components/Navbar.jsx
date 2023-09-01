@@ -24,7 +24,7 @@ export default function Navbar() {
             </svg>
           </button>
           <form method='GET' onSubmit={searchBook}>
-            <input value={search} onChange={e => setSearch(e.target.value)} type="text" name='q' placeholder='Search something...' className='b outline-none px-2 py-1 bg-inherit text-white' autoComplete='off'/>
+            <input value={search} onChange={e => setSearch(e.target.value)} type="text" name='q' placeholder='Search something...' className={`b outline-none px-2 py-1 bg-inherit ${isDark && "text-white"}`} autoComplete='off'/>
           </form>
           <button onClick={searchBook} className='b bg-primary text-white px-2 py-1 rounded-lg md:text-lg'>Search</button>
         </li>
