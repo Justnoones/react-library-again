@@ -18,7 +18,7 @@ export default function Navbar() {
     <nav className={`border border-b-3 ${isDark && "border-primary"}`}>
       <ul className='flex justify-between items-center max-w-6xl mx-auto p-3'>
         <li className='flex space-x-2 items-center text-center'>
-          <button onClick={searchBook}>
+          <button onClick={searchBook} className='hidden md:block'>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 ${isDark && "text-primary"}`}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
@@ -26,7 +26,12 @@ export default function Navbar() {
           <form method='GET' onSubmit={searchBook}>
             <input value={search} onChange={e => setSearch(e.target.value)} type="text" name='q' placeholder='Search something...' className={`b outline-none px-2 py-1 bg-inherit ${isDark && "text-white"}`} autoComplete='off'/>
           </form>
-          <button onClick={searchBook} className='b bg-primary text-white px-2 py-1 rounded-lg md:text-lg'>Search</button>
+          <button onClick={searchBook} className='b bg-primary text-white px-2 py-1 rounded-lg md:text-lg hidden md:block'>Search</button>
+          <button onClick={searchBook} className='block md:hidden'>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 ${isDark && "text-primary"}`}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+          </button>
         </li>
         <Link to="/" className='flex space-x-2 items-center md:-ml-12'>
           <h1 className='b text-2xl font-bold text-primary hidden md:block'>Book Store</h1>
@@ -41,7 +46,7 @@ export default function Navbar() {
             </svg>
             <span className='text-lg hidden md:block'>Create Book</span>
           </Link>
-          <div className='w-10'>
+          <div className='w-10 hidden md:block'>
             <img src='https://i.pinimg.com/474x/40/3c/6e/403c6e5bd46ac212351fd80f63a9849f.jpg' className='w-full rounded-full' />
           </div>
           <div className='w-10 text-center'>
