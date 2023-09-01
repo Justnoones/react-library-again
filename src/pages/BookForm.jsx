@@ -1,18 +1,46 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useTheme from '../hooks/useTheme';
 import db from '../firebase/index';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 
-export default function Create () {
+export default function BookForm () {
+
+  let { id } = useParams();
 
   let { isDark } = useTheme();
+
   let [ title, setTitle ] = useState("");
   let [ description, setDescription ] = useState("");
   let [ category, setCategory ] = useState("");
   let [ categories, setCategories ] = useState([]);
+  let [ isEdit, setIsEdit ] = useState(false);
+
   let navigate = useNavigate();
 
+  useEffect(() => {
+    if (id) {
+      setIsEdit(true);
+      let ref = doc(db, "books", id);
+      getDoc(ref)
+        .then(doc => {
+          if (doc.exists()) {
+            let { title, description, categories } = doc.data();
+            setTitle(title);
+            setDescription(description);
+            setCategories(categories);
+          } else {
+            navigate("/");
+          }
+        })
+
+    } else {
+      setIsEdit(false);
+      setTitle("");
+      setDescription("");
+      setCategories("");
+    }
+  }, []);
 
   let addNewCategory = e => {
     e.preventDefault();
@@ -26,7 +54,7 @@ export default function Create () {
     setCategory("");
   }
 
-  let createNewBook = e => {
+  let submitForm = async (e)=> {
     e.preventDefault();
     let newBook = {
       title,
@@ -35,14 +63,18 @@ export default function Create () {
       date : serverTimestamp()
     }
 
-    let ref = collection(db, "books");
-    addDoc(ref, newBook);
-
+    if (isEdit) {
+      let ref = doc(db, "books", id);
+      await updateDoc(ref, newBook);
+    } else {
+      let ref = collection(db, "books");
+      addDoc(ref, newBook);
+    }
     navigate("/");
   }
 
   return (
-      <form className='w-full max-w-lg mx-auto mt-5' onSubmit={createNewBook}>
+      <form className='w-full max-w-lg mx-auto mt-5' onSubmit={submitForm}>
         <div className='flex flex-wrap -mx-3 mb-6 space-y-5'>
           <div className="w-full px-3">
             <label className={`block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 ${isDark && "text-white"}`} htmlFor="title">
@@ -77,7 +109,7 @@ export default function Create () {
             </div>
           </div>
           <div className="w-full px-3">
-            <button className='w-full text-white bg-indigo-500 px-2 py-1 rounded-lg'>Create Book</button>
+            <button className='w-full text-white bg-indigo-500 px-2 py-1 rounded-lg'>{isEdit ? "Edit" : "Create"} Book</button>
           </div>
         </div>
       </form>

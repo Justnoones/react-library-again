@@ -1,9 +1,10 @@
 import React from 'react'
 import gojo from '../assets/download.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useTheme from '../hooks/useTheme';
 import trash from '../assets/trash.svg';
 import { doc, deleteDoc } from 'firebase/firestore';
+import edit from '../assets/edit.svg';
 import db from '../firebase';
 
 export default function BookList ({book, setBooks}) {
@@ -15,6 +16,14 @@ export default function BookList ({book, setBooks}) {
       return ps.filter(b => b.id!== id);
     })
   }
+
+  let navigate = useNavigate();
+
+  let editBook = (e, id) => {
+    e.preventDefault();
+    navigate(`edit/${id}`);
+  }
+
   let { isDark } = useTheme();
   return (
     <Link to={`books/${book.id}`} className={`min-h-[520px] border-2 shadow-sm text-center space-y-2 mt-2 ${isDark && "border-primary"}`}>
@@ -35,9 +44,14 @@ export default function BookList ({book, setBooks}) {
           </div>
         </div>
         <div className="min-h-[50px]">
-          <button className='flex mx-auto px-2 py-1 bg-red-500 rounded-lg text-white' onClick={e => deleteBook(e, book.id)}>
-            <img src={trash} /><span className='font-bold'>Delete</span>
-          </button>
+          <div className="grid grid-cols-2">
+            <button className='flex mx-auto px-2 py-1 bg-red-500 rounded-lg text-white' onClick={e => deleteBook(e, book.id)}>
+              <img src={trash} /><span className='font-bold hidden md:block'>Delete</span>
+            </button>
+            <button className='flex mx-auto px-2 py-1 bg-yellow-500 rounded-lg text-black' onClick={e => editBook(e, book.id)}>
+              <img src={edit} /><span className='font-bold hidden md:block'>Edit</span>
+            </button>
+          </div>
         </div>
     </Link>
   )
