@@ -1,15 +1,40 @@
-import React from 'react';
-import useFetch from '../hooks/useFetch';
+import React, { useEffect } from 'react';
 import BookList from './BookList';
 import { useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { collection, doc, getDocs } from 'firebase/firestore';
+import db from '../firebase';
 
 export default function BookLists () {
   
   let location = useLocation();
   let param = new URLSearchParams(location.search);
   let searchValue = param.get('q');
-  let url = `http://localhost:3000/Books${searchValue ? "?q="+searchValue : ""}`;
-  let { data : books, loading, error } = useFetch(url);
+
+  let [ books, setBooks ] = useState([]);
+  let [ error, setError ] = useState(false);
+  let [ loading, setLoading ] = useState(false);
+
+  useEffect(() => {
+    let ref = collection(db, "books");
+    getDocs(ref).then(docs => {
+      setLoading(true);
+      if (docs.empty) {
+        setError(true);
+        setLoading(false);
+      } else {
+        let books = [];
+        docs.forEach(doc => {
+          let book = {id : doc.id, ...doc.data()};
+          books.push(book);
+        })
+        setLoading(false);
+        setError(false);
+        setBooks(books);
+      }
+    })
+  }, []);
+
 
   return (
     <>

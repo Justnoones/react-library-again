@@ -1,15 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import useFetch from '../hooks/useFetch';
 import gojo from '../assets/download.jpg';
 import { Link } from 'react-router-dom';
 import useTheme from '../hooks/useTheme';
+import { doc, getDoc } from 'firebase/firestore';
+import db from '../firebase';
 
 export default function BookDetail () {
-    let param = useParams();
-    let url = `http://localhost:3000/Books/${param.id}`;
-    let { data : book, loading, error } = useFetch(url);
+    let { id } = useParams();
+    let [ book, setBook ] = useState(null);
+    let [ error, setError ] = useState(false);
+    let [ loading, setLoading ] = useState(false);
     let { isDark } = useTheme();
+
+    useEffect(() => {
+        setLoading(true);
+        const ref = doc(db, "books", id);
+        getDoc(ref).then(doc => {
+            if (doc.exists()) {
+                let data = { id : doc.id, ...doc.data() };
+                setBook(data);
+                setLoading(false);
+                setError(false);
+            } else {
+                setLoading(true);
+                setError(true);
+            }
+        })
+    }, [id]);
+
+
+
   return (
     <div className='mt-5'>
         {loading && <div className='text-center text-gray-500 font-bold text-2xl mt-3'>Loading...</div>}
