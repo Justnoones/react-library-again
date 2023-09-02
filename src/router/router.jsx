@@ -4,7 +4,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Layout from '../Layouts/Layout';
 import BookDetail from '../components/BookDetail';
 import NotFound404Page from '../components/NotFound404Page';
-import Create from '../pages/Create';
+import BookForm from '../pages/BookForm';
 
 const router = createBrowserRouter([
   {
@@ -21,7 +21,11 @@ const router = createBrowserRouter([
       },
       {
         path: "create",
-        element: <Create />
+        element: <BookForm />
+      },
+      {
+        path: "edit/:id",
+        element: <BookForm />
       },
       {
         path: "*",

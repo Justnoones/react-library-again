@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import useFetch from '../hooks/useFetch';
 import { useNavigate } from 'react-router-dom';
 import useTheme from '../hooks/useTheme';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import db from '../firebase';
 
-export default function Create () {
+export default function BookForm () {
 
   let { isDark } = useTheme();
   let [ title, setTitle ] = useState("");
   let [ description, setDescription ] = useState("");
   let [ category, setCategory ] = useState("");
   let [ categories, setCategories ] = useState([]);
-  let { setPostData, data: books } = useFetch("http://localhost:3000/Books", "POST");
   let navigate = useNavigate();
 
 
@@ -26,22 +26,17 @@ export default function Create () {
     setCategory("");
   }
 
-  useEffect(() => {
-    if (books) {
-      navigate(`/books/${books.id}`);
-    }
-  }, [books, navigate])
-
   let createNewBook = e => {
     e.preventDefault();
-    let id = Math.floor(Math.random() * 300);
     let newBook = {
-      id,
       title,
       description,
-      categories
+      categories,
+      date : serverTimestamp()
     }
-    setPostData(newBook);
+    let ref = collection(db, "books");
+    addDoc(ref, newBook);
+    navigate("/");
   }
 
   return (
