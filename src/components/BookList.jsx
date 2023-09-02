@@ -7,14 +7,14 @@ import { doc, deleteDoc } from 'firebase/firestore';
 import edit from '../assets/edit.svg';
 import db from '../firebase';
 
-export default function BookList ({book, setBooks}) {
+export default function BookList ({book}) {
   let deleteBook = async (e , id) => {
     e.preventDefault();
     let ref = doc(db, "books", id);
     await deleteDoc(ref);
-    setBooks(ps => {
-      return ps.filter(b => b.id!== id);
-    })
+    // setBooks(ps => {
+    //   return ps.filter(b => b.id!== id);
+    // })
   }
 
   let navigate = useNavigate();

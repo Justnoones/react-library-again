@@ -4,7 +4,7 @@ import gojo from '../assets/download.jpg';
 import { Link } from 'react-router-dom';
 import useTheme from '../hooks/useTheme';
 import db from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 
 export default function BookDetail () {
     let { id } = useParams();
@@ -16,18 +16,17 @@ export default function BookDetail () {
     useEffect(() => {
         setLoading(true);
         let ref = doc(db, "books", id);
-        getDoc(ref)
-            .then(doc => {
-                if (doc.exists()) {
-                    let book = { id : doc.id, ...doc.data() };
-                    setBook(book);
-                    setLoading(false);
-                    setError(false);
-                } else {
-                    setError(true);
-                    setLoading(false);
-                }
-            })
+        onSnapshot(ref, doc => {
+            if (doc.exists()) {
+                let book = { id : doc.id, ...doc.data() };
+                setBook(book);
+                setLoading(false);
+                setError(false);
+            } else {
+                setError(true);
+                setLoading(false);
+            }
+        });
     }, [id]);
   return (
     <div className='mt-5'>
