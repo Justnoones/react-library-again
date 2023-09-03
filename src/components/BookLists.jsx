@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import BookList from './BookList';
 import { useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import { collection, doc, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 import db from '../firebase';
 
 export default function BookLists () {
@@ -18,7 +18,7 @@ export default function BookLists () {
   useEffect(() => {
     let ref = collection(db, "books");
     let q = query(ref, orderBy('date', 'desc'));
-    getDocs(q).then(docs => {
+    onSnapshot(q, (docs) => {
       setLoading(true);
       if (docs.empty) {
         setError(true);
@@ -43,7 +43,7 @@ export default function BookLists () {
         <div className='grid grid-cols-2 md:grid-cols-4 gap-3 mt-5'>
             {loading && <p>loading...</p>}
             {books && books.map(book => (
-              <BookList key={book.id} book={book} setBooks={setBooks} />
+              <BookList key={book.id} book={book} />
             ))}
         </div>
     </>

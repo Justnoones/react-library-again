@@ -5,15 +5,14 @@ import useTheme from '../hooks/useTheme';
 import { deleteDoc, doc } from 'firebase/firestore';
 import db from '../firebase';
 
-export default function BookList ({book, setBooks}) {
+export default function BookList ({book}) {
   let { isDark } = useTheme();
   let navigate = useNavigate();
 
   let deleteHandler = async (e, id) => {
     e.preventDefault();
     let ref = doc(db, "books", id);
-    await deleteDoc(ref);
-    setBooks(ps => (ps.filter(book => book.id !== id)));
+    deleteDoc(ref);
   }
 
   let editHandler = (e, id) => {

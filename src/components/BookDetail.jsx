@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import gojo from '../assets/download.jpg';
 import { Link } from 'react-router-dom';
 import useTheme from '../hooks/useTheme';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import db from '../firebase';
 
 export default function BookDetail () {
@@ -16,7 +16,7 @@ export default function BookDetail () {
     useEffect(() => {
         setLoading(true);
         const ref = doc(db, "books", id);
-        getDoc(ref).then(doc => {
+        onSnapshot(ref, doc => {
             if (doc.exists()) {
                 let data = { id : doc.id, ...doc.data() };
                 setBook(data);
