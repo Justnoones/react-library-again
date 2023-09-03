@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import useTheme from '../hooks/useTheme';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, doc, getDoc, updateDoc } from 'firebase/firestore';
 import db from '../firebase';
+import { useParams } from 'react-router-dom';
 
 export default function BookForm () {
 
@@ -12,7 +13,26 @@ export default function BookForm () {
   let [ category, setCategory ] = useState("");
   let [ categories, setCategories ] = useState([]);
   let navigate = useNavigate();
+  let { id } = useParams();
+  let [ isEdit, setIsEdit ] = useState(false);
 
+  useEffect(() => {
+    if (id) {
+      setIsEdit(true);
+      const ref = doc(db, "books", id);
+      getDoc(ref).then(doc => {
+        let { title, description, categories } = doc.data();
+        setTitle(title);
+        setDescription(description);
+        setCategories(categories);
+      })
+    } else {
+      setIsEdit(false);
+      setTitle("");
+      setDescription("");
+      setCategories("");
+    }
+  }, []);
 
   let addNewCategory = e => {
     e.preventDefault();
@@ -26,7 +46,7 @@ export default function BookForm () {
     setCategory("");
   }
 
-  let createNewBook = e => {
+  let SubmitForm = async (e) => {
     e.preventDefault();
     let newBook = {
       title,
@@ -34,13 +54,18 @@ export default function BookForm () {
       categories,
       date : serverTimestamp()
     }
-    let ref = collection(db, "books");
-    addDoc(ref, newBook);
+    if (isEdit) {
+      const ref = doc(db, "books", id);
+      await updateDoc(ref, newBook);
+    } else {
+      let ref = collection(db, "books");
+      addDoc(ref, newBook);
+    }
     navigate("/");
   }
 
   return (
-      <form className='w-full max-w-lg mx-auto mt-5' onSubmit={createNewBook}>
+      <form className='w-full max-w-lg mx-auto mt-5' onSubmit={SubmitForm}>
         <div className='flex flex-wrap -mx-3 mb-6 space-y-5'>
           <div className="w-full px-3">
             <label className={`block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 ${isDark && "text-white"}`} htmlFor="title">
@@ -75,7 +100,7 @@ export default function BookForm () {
             </div>
           </div>
           <div className="w-full px-3">
-            <button className='w-full text-white bg-indigo-500 px-2 py-1 rounded-lg'>Create Book</button>
+            <button className='w-full text-white bg-indigo-500 px-2 py-1 rounded-lg'>{isEdit ? "Edit" : "Create"} Book</button>
           </div>
         </div>
       </form>
